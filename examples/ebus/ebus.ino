@@ -52,4 +52,10 @@ void loop()
 		incomingByte = ebus.read();
 		Serial.print(incomingByte);
 	}
+  //if something is available
+  if (Serial.available() > 0) {
+		// read the incoming byte & send to serial.
+		incomingByte = Serial.read();
+		ebus.print(incomingByte);
+	}
 } 

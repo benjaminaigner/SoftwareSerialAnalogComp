@@ -311,7 +311,7 @@ ISR(ANALOG_COMP_vect)
 //
 // Constructor
 //
-SoftwareSerialAnalogComp::SoftwareSerialAnalogComp(uint8_t pwmPin, uint8_t transmitPin, bool inverse_logic_rx = false, bool inverse_logic_tx = false):
+SoftwareSerialAnalogComp::SoftwareSerialAnalogComp(uint8_t pwmPin, uint8_t transmitPin, bool inverse_logic_rx, bool inverse_logic_tx):
   _rx_delay_centering(0),
   _rx_delay_intrabit(0),
   _rx_delay_stopbit(0),
@@ -363,15 +363,15 @@ void SoftwareSerialAnalogComp::begin(long speed)
     }
   }
 
+  
+  ACSR &= ~(1<<ACIE);
+  ACSR &= ~((1<<ACD)|(1<<ACBG)|(1<<ACIC)|(1<<ACIS0)|(1<<ACIS1));
+  ACSR |= (1<<ACI);
+  ACSR |= (1<<ACIE);
+  
   // Set up RX interrupts, but only if we have a valid RX baud rate
-  //TODO: anacomp setup
   if (_rx_delay_stopbit)
   {
-    if (digitalPinToPCICR(_receivePin))
-    {
-      *digitalPinToPCICR(_receivePin) |= _BV(digitalPinToPCICRbit(_receivePin));
-      *digitalPinToPCMSK(_receivePin) |= _BV(digitalPinToPCMSKbit(_receivePin));
-    }
     tunedDelay(_tx_delay); // if we were low this establishes the end
   }
 
